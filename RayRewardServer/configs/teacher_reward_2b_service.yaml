@@ -1,0 +1,50 @@
+server:
+  host: "0.0.0.0"
+  port: 8000
+
+cluster:
+  nnodes: 1
+  gpus_per_node: 1
+  cpus_per_worker: 1
+
+handlers:
+  teacher_inference:
+    class_name: "handlers.teacher:TeacherHandler"
+    num_workers: 1
+    gpu_per_worker: 1.0
+    placement_strategy: "PACK"   # 也可以改成 SPREAD / STRICT_PACK / STRICT_SPREAD
+    init_kwargs:
+      model_path: "/path/to/teacher/hf_ckpt"  # TODO: 换成对应的2b teacher
+      tensor_parallel_size: 1
+      max_model_len: 20480
+      gpu_mem_util: 0.9
+      max_tokens: 4096
+      temperature: 0.7
+      top_p: 0.95
+      num_samples: 10
+      min_pixels: 262144
+      max_pixels: 524288
+
+
+  qwen_chatbot:
+    class_name: "handlers.qwen_chatbot:QwenChatbotHandler"
+    num_workers: 7
+    gpu_per_worker: 1.0
+    placement_strategy: "PACK"
+    init_kwargs:
+      model_path: "/path/to/Qwen3-4B-Instruct-2507"
+      tensor_parallel_size: 1
+      max_model_len: 32768
+      gpu_mem_util: 0.9
+      max_tokens: 2048
+      temperature: 0.7
+      top_p: 0.9
+      batch_size: -1
+
+
+
+
+
+
+
+

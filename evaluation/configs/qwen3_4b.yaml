@@ -1,0 +1,28 @@
+exp_name: qwen3_4b
+
+model:
+  model_path: "/path/to/reasoner_hf_ckpt"  # TODO: 改成reasoner的路径
+  tensor_parallel_size: 1
+  max_model_len: 20480
+  gpu_mem_util: 0.9
+  max_tokens: 4096
+  temperature: 0
+  top_p: 0.95
+  num_samples: 1
+  # min_pixels和max_pixels要和reasoner训练时保持一致
+  min_pixels: 262144
+  max_pixels: 524288
+
+qwen_chatbot:
+  model_path: "/path/to/Qwen3-4B-Instruct-2507"
+  tensor_parallel_size: 1
+  max_model_len: 32768
+  gpu_mem_util: 0.9
+  max_tokens: 2048
+  temperature: 0.7
+  top_p: 0.9
+  n: 5
+  batch_size: 64
+
+save_dir: /save/path/
+gpu_ids: 0,1,2,3,4,5,6,7

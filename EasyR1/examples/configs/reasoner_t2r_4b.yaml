@@ -1,0 +1,109 @@
+data:
+  ds_type: reasoner
+  train_files: "/path/to/datasets/ReXVQA_reasoner_train_val_hf_v2@train"
+  val_files: "/path/to/datasets/ReXVQA_reasoner_train_val_hf_v2@val"
+  split_idx: 3  # TODO 1,2或3
+  prompt_key: prompt
+  answer_key: answer
+  image_key: image
+  video_key: videos
+  image_dir: /path/to/images/ReXGradient-160K
+  video_fps: 2.0
+  max_prompt_length: 5120
+  max_response_length: 1024
+  rollout_batch_size: 128  # equivalent to verl's data.train_batch_size
+  mini_rollout_batch_size: null  # equivalent to verl's data.gen_batch_size
+  val_batch_size: 256
+  format_prompt: null
+  override_chat_template: null
+  shuffle: true
+  seed: 1
+  min_pixels: 262144
+  max_pixels: 524288
+  filter_overlong_prompts: true
+
+algorithm:
+  adv_estimator: grpo
+  disable_kl: false
+  use_kl_loss: true
+  kl_penalty: low_var_kl
+  kl_coef: 1.0e-2
+  online_filtering: false  # dapo filter groups
+  filter_key: overall
+  filter_low: 0.01
+  filter_high: 0.99
+
+worker:
+  actor:
+    global_batch_size: 128  # equivalent to verl's actor.ppo_mini_batch_size
+    micro_batch_size_per_device_for_update: 1  # equivalent to verl's actor.ppo_micro_batch_size_per_gpu
+    micro_batch_size_per_device_for_experience: 2  # equivalent to verl's rollout.log_prob_micro_batch_size_per_gpu
+    max_grad_norm: 1.0
+    padding_free: true
+    dynamic_batching: true
+    ulysses_size: 1
+    model:
+      #      model_path: /efs/share/250911/models/Lingshu-7B
+      model_path: /path/to/4b_t2r_reasoner  # TODO: 改成上一阶段的4b路径
+      enable_gradient_checkpointing: true
+      trust_remote_code: false
+      freeze_vision_tower: false
+    optim:
+      lr: 1.0e-6
+      weight_decay: 1.0e-2
+      strategy: adamw_bf16  # {adamw, adamw_bf16}
+      lr_warmup_ratio: 0.0
+    fsdp:
+      enable_full_shard: true
+      enable_cpu_offload: false
+      enable_rank0_init: true
+    offload:
+      offload_params: true  # true: more CPU memory; false: more GPU memory
+      offload_optimizer: true  # true: more CPU memory; false: more GPU memory
+
+  rollout:
+    n: 16
+    temperature: 1.0
+    top_p: 1.0
+    limit_images: 2
+    max_num_batched_tokens: 14336
+    gpu_memory_utilization: 0.8
+    enforce_eager: false
+    enable_chunked_prefill: false
+    tensor_parallel_size: 1
+    disable_tqdm: false
+    val_override_config:
+      temperature: 0.6
+      top_p: 0.95
+      n: 1
+
+  ref:
+    fsdp:
+      enable_full_shard: true
+      enable_cpu_offload: true  # true: more CPU memory; false: more GPU memory
+      enable_rank0_init: true
+    offload:
+      offload_params: false
+
+  reward:
+    reward_function: ./examples/reward_function/reasoner_reward.py:compute_score  # 在命令行中写
+
+trainer:
+  total_epochs: 1
+  max_steps: null
+  project_name: easy_r1
+  experiment_name: "EXP_NAME"  # 在命令行中写
+  logger: [ "console", "tensorboard" ]
+  nnodes: 1
+  n_gpus_per_node: 8
+  max_try_make_batch: 20  # -1 means no limit
+  val_freq: 5  # -1 to disable
+  val_before_train: false
+  val_only: false
+  val_generations_to_log: 3
+  save_freq: 5  # -1 to disable
+  save_limit: 2  # -1 to disable
+  save_model_only: true
+  save_checkpoint_path: "EXP_NAME"  # 在命令行中写
+  load_checkpoint_path: null
+  find_last_checkpoint: false

@@ -1,0 +1,13 @@
+exp_name: qwen3_235b
+
+qwen_chatbot:
+  model_name: "/model/qwen3-235b-a22b"
+  base_url: "https://api/qwen3-235b-a22b/v1/"
+  api_key: msk-aba0f6dcxxxxxxxx
+  max_tokens: 2048
+  temperature: 0.7
+  top_p: 0.9
+  n: 5
+
+save_dir: /save/path/
+gpu_ids: 0,1,2,3,4,5,6,7
