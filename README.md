@@ -5,14 +5,24 @@
 </p>
 
 <p align="center">
-  Supplementary codebase for <strong>Teach-to-Reason (T2R)</strong>, a reinforcement learning framework for training chest X-ray VQA models with comparison-based supervision over medical chain-of-thought reasoning.
+  Xiao Han, Hao Liu, Zhimin Bao, Jile Jiao, Yue Wang, Hui Guo, Xiaofeng Mou, Yi Xu
+</p>
+<p align="center">
+  <strong>🎉🎉🎉 Teach-to-Reason has been accepted to NeurIPS 2026!</strong>
+</p>
+
+
+<p align="center">
+  Official codebase for <strong>Teach-to-Reason (T2R)</strong>, a reinforcement learning framework for training chest X-ray VQA models with comparison-based supervision over medical chain-of-thought reasoning.
 </p>
 
 <p align="center">
+  <a href="https://arxiv.org/abs/2606.25407">Paper (arXiv)</a> •
   <a href="#abstract">Abstract</a> •
   <a href="#overview">Overview</a> •
   <a href="#paper-faithful-training-schedule">Training Schedule</a> •
-  <a href="#evaluation-on-your-own-test-set">Evaluation</a>
+  <a href="#evaluation-on-your-own-test-set">Evaluation</a> •
+  <a href="#citation">Citation</a>
 </p>
 
 <p align="center">
@@ -21,11 +31,9 @@
 
 ---
 
-> This repository is provided as supplementary material for anonymous review. Author-identifying information has been removed.
-
 ## Abstract
 
-> Chest X-ray visual question answering (CXR VQA) requires models not only to predict correct answers, but also to produce reliable medical reasoning. However, existing reinforcement-learning-based training typically relies on answer-level rewards, which are often too coarse to improve chain-of-thought (CoT) quality and can become ineffective when group-level advantages collapse to zero. We propose \textbf{Teach-to-Reason (T2R)}, a framework that introduces comparison-based supervision into CoT optimization through a self-improving \emph{Teacher} and a competition-guided \emph{Reasoner}. As the Teacher is iteratively strengthened via self-competition, the Reasoner is optimized against progressively stronger Teacher-generated references. We further introduce a case-wise reward design that preserves the original reward-induced positive/negative partition when it is informative, and restores supervision from competition scores when the original reward signal degenerates. Experiments on multiple CXR open-ended VQA benchmarks show that T2R consistently outperforms strong baselines, indicating that comparison-based supervision, when integrated in a controlled and principled manner, provides a more effective training signal for reasoning optimization.
+> Chest X-ray visual question answering (CXR VQA) requires models not only to predict correct answers, but also to produce reliable medical reasoning. However, existing reinforcement-learning-based training typically relies on answer-level rewards, which are often too coarse to improve chain-of-thought (CoT) quality and can become ineffective when group-level advantages collapse to zero. We propose **Teach-to-Reason (T2R)**, a framework that introduces comparison-based supervision into CoT optimization through a self-improving *Teacher* and a competition-guided *Reasoner*. As the Teacher is iteratively strengthened via self-competition, the Reasoner is optimized against progressively stronger Teacher-generated references. We further introduce a case-wise reward design that preserves the original reward-induced positive/negative partition when it is informative, and restores supervision from competition scores when the original reward signal degenerates. Experiments on multiple CXR open-ended VQA benchmarks show that T2R consistently outperforms strong baselines, indicating that comparison-based supervision, when integrated in a controlled and principled manner, provides a more effective training signal for reasoning optimization.
 
 ## Overview
 
@@ -576,7 +584,7 @@ ray job submit \
 
 ### RLVR training for Reasoner
 
-This corresponds to the training logic in `train_reasoner_2b_rlvr.sh`.
+This section shows a representative 2B RLVR Reasoner training command.
 
 ```bash
 cd /path/to/Teach_to_Reason/EasyR1
@@ -715,7 +723,7 @@ python evaluation/vqa_evaluate.py \
 
 Behavior summary:
 
-- `open_ended` samples are judged by  the local Qwen3 model.
+- `open_ended` samples are judged by the local Qwen3 model.
 - `single_choice` samples are scored with rule-based exact matching.
 - `evaluation/configs/qwen3_4b.yaml` is provided to help users quickly validate results with a **local** `Qwen3-4B-Instruct-2507` deployment.
 
@@ -735,3 +743,19 @@ This script is intended for the API-based judging setup described in the paper.
 - [evaluation/configs/qwen235b.yaml](./evaluation/configs/qwen235b.yaml) is used in this paper for API-based answer judging with `qwen3-235b-a22b`.
 - The provided API-based configuration is included as a reference for the evaluation protocol used in the paper.
 - Users should replace the endpoint and credentials with their own accessible judge service when reproducing the API-based evaluation.
+
+## Citation
+
+If you find this work useful in your research, please cite our paper, accepted to **NeurIPS 2026**. The [arXiv version](https://arxiv.org/abs/2606.25407) can be cited as follows:
+
+```bibtex
+@misc{han2026teachtoreasoncompetitionguidedreasoningselfimproving,
+      title={Teach-to-Reason: Competition-Guided Reasoning with a Self-Improving Teacher}, 
+      author={Xiao Han and Hao Liu and Zhimin Bao and Jile Jiao and Yue Wang and Hui Guo and Xiaofeng Mou and Yi Xu},
+      year={2026},
+      eprint={2606.25407},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2606.25407}, 
+}
+```
